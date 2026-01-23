@@ -1,13 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Local Collection Manager</title>
-  <link rel="stylesheet" href="styles.css" />
+  <meta charset="UTF-8">
+  <title>Bible Verse Collection</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <h1>Collection Manager</h1>
-  <p>If you can see this, Apache is working.</p>
+
+  <h1>Bible Verse Collection Manager</h1>
+
+  <nav>
+    <button id="listViewBtn">List</button>
+    <button id="addViewBtn">Add Verse</button>
+    <button id="statsViewBtn">Stats</button>
+  </nav>
+
+  <!-- LIST VIEW -->
+  <section id="listView">
+    <h2>All Verses</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Reference</th>
+          <th>Text</th>
+          <th>Translation</th>
+          <th>Memorized</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="verseTableBody">
+        <!-- JS inserts rows here -->
+      </tbody>
+    </table>
+  </section>
+
+  <!-- FORM VIEW (hidden for now) -->
+   <section id="formView" class="hidden">
+  <h2>Add / Edit Verse</h2>
+
+  <form id="verseForm">
+    <div>
+      <label for="reference">Reference</label><br>
+      <input type="text" id="reference" required>
+    </div>
+
+    <div>
+      <label for="text">Verse Text</label><br>
+      <textarea id="text" rows="4" required></textarea>
+    </div>
+
+    <button type="submit">Save Verse</button>
+    <button type="button" id="cancelBtn">Cancel</button>
+  </form>
+</section>
+
+
+  <!-- STATS VIEW (hidden for now) -->
+  <section id="statsView" class="hidden">
+    <h2>Stats</h2>
+  </section>
 
   <script src="app.js"></script>
 </body>
