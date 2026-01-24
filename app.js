@@ -1,8 +1,9 @@
-console.log("THIS IS MY VERSION OF app.js");
+console.log("JavaScript loaded");
 
 // --------------------
 // Seed Data
 // --------------------
+
 const SEED_VERSES = [
   { id: 1, reference: "Genesis 1:1", text: "In the beginning, God created the heavens and the earth.", translation: "ESV", memorized: false },
   { id: 2, reference: "Psalm 23:1", text: "The Lord is my shepherd; I shall not want.", translation: "ESV", memorized: false },
@@ -38,31 +39,27 @@ const SEED_VERSES = [
   { id: 30, reference: "Revelation 21:4", text: "He will wipe away every tear.", translation: "ESV", memorized: false }
 ];
 
-
 // --------------------
-// localStorage Logic
+// localStorage
 // --------------------
 
 const STORAGE_KEY = "bibleVerses";
 
 function loadVerses() {
   const stored = localStorage.getItem(STORAGE_KEY);
-
   if (!stored) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(SEED_VERSES));
     return SEED_VERSES;
   }
-
   return JSON.parse(stored);
 }
 
-function saveVerses(verses) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(verses));
+function saveVerses(data) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 }
 
 let verses = loadVerses();
 let editingVerseId = null;
-
 
 // --------------------
 // DOM References
@@ -77,12 +74,12 @@ const addViewBtn = document.getElementById("addViewBtn");
 const statsViewBtn = document.getElementById("statsViewBtn");
 const cancelBtn = document.getElementById("cancelBtn");
 
-const verseForm = document.getElementById("verseForm");
+const verseTableBody = document.getElementById("verseTableBody");
+
 const referenceInput = document.getElementById("reference");
 const textInput = document.getElementById("text");
-
-
-const verseTableBody = document.getElementById("verseTableBody");
+const translationInput = document.getElementById("translation");
+const memorizedInput = document.getElementById("memorized");
 
 // --------------------
 // View Switching
@@ -92,122 +89,121 @@ function showView(view) {
   listView.classList.add("hidden");
   formView.classList.add("hidden");
   statsView.classList.add("hidden");
-
   view.classList.remove("hidden");
 }
 
 listViewBtn.addEventListener("click", () => showView(listView));
 addViewBtn.addEventListener("click", () => showView(formView));
 statsViewBtn.addEventListener("click", () => showView(statsView));
-cancelBtn.addEventListener("click", () => showView(listView));
 
 // --------------------
-// Render List View (READ)
+// Render List
 // --------------------
 
 function renderVerseList() {
-console.log("Rows to render:", verses.length);
   verseTableBody.innerHTML = "";
 
-  verses.forEach(verse => {
+  verses.forEach(v => {
     const row = document.createElement("tr");
-
     row.innerHTML = `
-      <td>${verse.reference}</td>
-      <td>${verse.text}</td>
-      <td>${verse.translation}</td>
-      <td>${verse.memorized ? "Yes" : "No"}</td>
+      <td>${v.reference}</td>
+      <td>${v.text}</td>
+      <td>${v.translation}</td>
+      <td>${v.memorized ? "Yes" : "No"}</td>
       <td>
-        <button data-id="${verse.id}">Edit</button>
-        <button data-id="${verse.id}">Delete</button>
+        <button class="edit-btn" data-id="${v.id}">Edit</button>
+        <button class="delete-btn" data-id="${v.id}">Delete</button>
       </td>
     `;
-
     verseTableBody.appendChild(row);
   });
 }
 
+// --------------------
+// Edit / Delete
+// --------------------
 
+verseTableBody.addEventListener("click", (e) => {
+  const id = Number(e.target.dataset.id);
+
+  if (e.target.classList.contains("edit-btn")) {
+    startEdit(id);
+  }
+
+  if (e.target.classList.contains("delete-btn")) {
+    deleteVerse(id);
+  }
+});
+
+function startEdit(id) {
+  const verse = verses.find(v => v.id === id);
+  if (!verse) return;
+
+  editingVerseId = id;
+
+  referenceInput.value = verse.reference;
+  textInput.value = verse.text;
+  translationInput.value = verse.translation;
+  memorizedInput.checked = verse.memorized;
+
+  showView(formView);
+}
+
+function deleteVerse(id) {
+  if (!confirm("Delete this verse?")) return;
+
+  verses = verses.filter(v => v.id !== id);
+  saveVerses(verses);
+  renderVerseList();
+}
+
+// --------------------
+// Form Submit
+// --------------------
+
+document.getElementById("verseForm").addEventListener("submit", (e) => {
+  e.preventDefault();
+
+  const reference = referenceInput.value.trim();
+  const text = textInput.value.trim();
+  const translation = translationInput.value;
+  const memorized = memorizedInput.checked;
+
+  if (editingVerseId === null) {
+    verses.push({
+      id: Date.now(),
+      reference,
+      text,
+      translation,
+      memorized
+    });
+  } else {
+    const verse = verses.find(v => v.id === editingVerseId);
+    verse.reference = reference;
+    verse.text = text;
+    verse.translation = translation;
+    verse.memorized = memorized;
+  }
+
+  saveVerses(verses);
+  renderVerseList();
+  resetForm();
+  showView(listView);
+});
+
+function resetForm() {
+  editingVerseId = null;
+  document.getElementById("verseForm").reset();
+}
+
+cancelBtn.addEventListener("click", () => {
+  resetForm();
+  showView(listView);
+});
 
 // --------------------
 // Initial Load
 // --------------------
 
-
 showView(listView);
 renderVerseList();
-
-
-
-function handleFormSubmit(event) {
-  // 1. Stop the page from refreshing
-  event.preventDefault();
-
-  // 2. Read values from the form inputs
-  const referenceInput = document.getElementById("reference");
-  const textInput = document.getElementById("text");
-
-  const reference = referenceInput.value.trim();
-  const text = textInput.value.trim();
-
-  // 3. Basic validation
-  if (!reference || !text) {
-    alert("Both fields are required.");
-    return;
-  }
-
-  // 4. Decide: CREATE or UPDATE
-  if (editingVerseId === null) {
-    // -------- CREATE --------
-    const newVerse = {
-      id: Date.now(),        // simple unique ID
-      reference: reference,
-      text: text
-    };
-
-    verses.push(newVerse);
-  } else {
-    // -------- UPDATE --------
-    const verse = verses.find(v => v.id === editingVerseId);
-
-    if (verse) {
-      verse.reference = reference;
-      verse.text = text;
-    }
-
-    editingVerseId = null; // reset mode after editing
-  }
-
-  // 5. Save to localStorage
-  saveVerses(verses);
-
-  // 6. Re-render list
-  renderVerseList();
-
-  // 7. Clear the form
-  verseForm.reset();
-}
-
-verseForm.addEventListener("submit", function (e) {
-  e.preventDefault();
-
-  const reference = referenceInput.value.trim();
-  const text = textInput.value.trim();
-
-  if (!reference || !text) return;
-
-  verses.push({
-    id: Date.now(),
-    reference,
-    text,
-    translation: "ESV",
-    memorized: false
-  });
-
-  saveVerses(verses);
-  renderVerseList();
-
-  verseForm.reset();
-  listView.classList.remove("hidden");
-  formView.classList.add("hidden");
-});

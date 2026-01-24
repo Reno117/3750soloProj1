@@ -30,35 +30,47 @@
         </tr>
       </thead>
       <tbody id="verseTableBody">
-        <!-- JS inserts rows here -->
+        <!-- JS inserts rows -->
       </tbody>
     </table>
   </section>
 
-  <!-- FORM VIEW (hidden for now) -->
-   <section id="formView" class="hidden">
-  <h2>Add / Edit Verse</h2>
+  <!-- FORM VIEW -->
+  <section id="formView" class="hidden">
+    <h2>Add / Edit Verse</h2>
 
-  <form id="verseForm">
-    <div>
-      <label for="reference">Reference</label><br>
-      <input type="text" id="reference" required>
-    </div>
+    <form id="verseForm">
+      <div>
+        <label for="reference">Reference</label><br>
+        <input type="text" id="reference" required>
+      </div>
 
-    <div>
-      <label for="text">Verse Text</label><br>
-      <textarea id="text" rows="4" required></textarea>
-    </div>
+      <div>
+        <label for="text">Verse Text</label><br>
+        <textarea id="text" rows="4" required></textarea>
+      </div>
 
-    <button type="submit">Save Verse</button>
-    <button type="button" id="cancelBtn">Cancel</button>
-  </form>
-</section>
+      <div>
+        <label for="translation">Translation</label><br>
+        <input type="text" id="translation" value="ESV">
+      </div>
 
+      <div>
+        <label>
+          <input type="checkbox" id="memorized">
+          Memorized
+        </label>
+      </div>
 
-  <!-- STATS VIEW (hidden for now) -->
+      <button type="submit">Save Verse</button>
+      <button type="button" id="cancelBtn">Cancel</button>
+    </form>
+  </section>
+
+  <!-- STATS VIEW -->
   <section id="statsView" class="hidden">
     <h2>Stats</h2>
+    <p id="statsOutput"></p>
   </section>
 
   <script src="app.js"></script>
