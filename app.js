@@ -3,8 +3,9 @@ console.log("JavaScript loaded");
 // --------------------
 // Seed Data
 // --------------------
-
-const SEED_VERSES = [
+// if prod ? seed with empty array, else if dev ? seed with sample data
+const isProduction = window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1";
+const SEED_VERSES = isProduction ? [] : [
   { id: 1, reference: "Genesis 1:1", text: "In the beginning, God created the heavens and the earth.", translation: "ESV", memorized: false },
   { id: 2, reference: "Psalm 23:1", text: "The Lord is my shepherd; I shall not want.", translation: "ESV", memorized: false },
   { id: 3, reference: "Psalm 46:10", text: "Be still, and know that I am God.", translation: "ESV", memorized: false },
@@ -60,6 +61,8 @@ function saveVerses(data) {
 
 let verses = loadVerses();
 let editingVerseId = null;
+renderStats();
+
 
 // --------------------
 // DOM References
@@ -155,6 +158,19 @@ function deleteVerse(id) {
   verses = verses.filter(v => v.id !== id);
   saveVerses(verses);
   renderVerseList();
+  renderStats();
+
+}
+
+function renderStats() {
+  const total = verses.length;
+
+  const memorized = verses.filter(v => v.memorized).length;
+  const notMemorized = total - memorized;
+
+  document.getElementById("totalCount").textContent = total;
+  document.getElementById("memorizedCount").textContent = memorized;
+  document.getElementById("notMemorizedCount").textContent = notMemorized;
 }
 
 // --------------------
@@ -189,6 +205,8 @@ document.getElementById("verseForm").addEventListener("submit", (e) => {
   renderVerseList();
   resetForm();
   showView(listView);
+  renderStats();
+
 });
 
 function resetForm() {
@@ -200,6 +218,16 @@ cancelBtn.addEventListener("click", () => {
   resetForm();
   showView(listView);
 });
+
+
+statsViewBtn.addEventListener("click", () => {
+  listView.classList.add("hidden");
+  formView.classList.add("hidden");
+  statsView.classList.remove("hidden");
+
+  renderStats();
+});
+
 
 // --------------------
 // Initial Load
