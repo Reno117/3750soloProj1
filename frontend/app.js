@@ -1,6 +1,6 @@
 console.log("JavaScript loaded");
 
-const API_BASE = "http://localhost/collection_manager/backend/api";
+const API_BASE = "https://three750soloproj1.onrender.com/";
 let verses = [];
 const PAGE_SIZE = 10;
 let currentPage = 1;
