@@ -1,7 +1,10 @@
 FROM php:8.2-apache
 
-# Copy project files into container
+# Copy files
 COPY . /var/www/html/
 
-# Expose port
+# Fix permissions
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 755 /var/www/html
+
 EXPOSE 80
